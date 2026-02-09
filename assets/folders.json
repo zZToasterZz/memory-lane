@@ -1,0 +1,79 @@
+[
+  {
+    "key": "firstdate",
+    "label": "First Date",
+    "basePath": "assets/photos/firstdate/",
+    "files": [
+        { "file": "1.jpeg", "caption": "The day we met." }, 
+        { "file": "2.jpeg", "caption": "And I knew we were meant to be." }
+    ],
+    "audio": "assets/ost/GehraHua.mp3"
+  },
+  {
+    "key": "seconddate",
+    "label": "Second Date",
+    "basePath": "assets/photos/seconddate/",
+    "files": []
+  },
+  {
+    "key": "familymeet",
+    "label": "Family Meet",
+    "basePath": "assets/photos/familymeet/",
+    "files": []
+  },
+  {
+    "key": "firstkiss",
+    "label": "First Kiss",
+    "basePath": "assets/photos/firstkiss/",
+    "files": []
+  },
+  {
+    "key": "babybirthday",
+    "label": "Baby Birthday",
+    "basePath": "assets/photos/babybirthday/",
+    "files": []
+  },
+  {
+    "key": "ring",
+    "label": "Ring",
+    "basePath": "assets/photos/ring/",
+    "files": []
+  },
+  {
+    "key": "newyear",
+    "label": "New Year",
+    "basePath": "assets/photos/newyear/",
+    "files": []
+  },
+  {
+    "key": "mybirthday",
+    "label": "My Birthday",
+    "basePath": "assets/photos/mybirthday/",
+    "files": []
+  },
+  {
+    "key": "firsttrip",
+    "label": "First Trip",
+    "basePath": "assets/photos/firsttrip/",
+    "files": []
+  },
+  {
+    "key": "specialmoments",
+    "label": "Special Moments",
+    "basePath": "assets/photos/specialmoments/",
+    "files": []
+  },
+  {
+    "key": "sillyus",
+    "label": "Silly Us",
+    "basePath": "assets/photos/sillyus/",
+    "files": []
+  },
+  {
+    "key": "secret-message",
+    "label": "Secret Message",
+    "secret": true,
+    "basePath": "assets/photos/",
+    "files": ["puzzle.jpg"]
+  }
+]

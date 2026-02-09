@@ -77,7 +77,7 @@ const memoriesData = {
 };
 
 // Puzzle image URL for secret message
-const puzzleImageUrl = 'https://via.placeholder.com/400x400/f5c5a8/8b6f67?text=Our+Love';
+const puzzleImageUrl = 'assets/photos/puzzle.jpg';
 
 // ============================================
 // STATE MANAGEMENT
@@ -87,7 +87,7 @@ const state = {
     currentFolder: null,
     puzzlePieces: [],
     snappedPieces: 0,
-    puzzleGrid: 4, // 4x4 grid
+    puzzleGrid: 3, // 3x3 grid
     isDraggingPiece: false
 };
 
@@ -142,25 +142,203 @@ openMemoriesBtn.addEventListener('click', function(e) {
 // MEMORIES & FOLDERS FUNCTIONALITY
 // ============================================
 
-const folderItems = document.querySelectorAll('.folder-item');
 const photoModal = document.getElementById('photoModal');
 const modalClose = document.querySelector('.modal-close');
+const foldersGrid = document.getElementById('foldersGrid');
+let loadedFolders = [];
+let currentAudio = null;
+const photoOverlay = document.getElementById('photoOverlay');
+const overlayImage = document.getElementById('overlayImage');
+const overlayCaption = document.getElementById('overlayCaption');
+const overlayClose = document.getElementById('overlayClose');
 
-/**
- * Handle folder click to open photos
- */
-folderItems.forEach(item => {
-    item.addEventListener('click', function() {
-        const folderKey = this.dataset.folder;
+function playAudio(src) {
+    stopAudio();
+    if (!src) return;
+    try {
+        currentAudio = new Audio(src);
+        currentAudio.loop = true;
+        currentAudio.volume = 0.45;
+        currentAudio.play().catch(()=>{});
+    } catch (e) {
+        currentAudio = null;
+    }
+}
 
-        if (folderKey === 'secret-message') {
-            // Open puzzle page instead
-            openPuzzle();
+function stopAudio() {
+    if (currentAudio) {
+        try { currentAudio.pause(); } catch(e) {}
+        currentAudio = null;
+    }
+}
+
+// Load folder manifest (assets/folders.json) and render folders
+async function loadAndRenderFolders() {
+    let folders = null;
+    // Try to fetch external manifest first (works on http/localhost). If that fails
+    // (for example when opening index.html via file://), fall back to the embedded manifest.
+    try {
+        const resp = await fetch('assets/folders.json');
+        if (resp.ok) {
+            folders = await resp.json();
         } else {
-            // Open photo gallery
-            openPhotoGallery(folderKey);
+            console.warn('Could not load assets/folders.json, using defaults');
         }
+    } catch (e) {
+        console.warn('Error fetching assets/folders.json, using defaults', e);
+    }
+
+    // Fallback if manifest missing
+    if (!folders) {
+        folders = [
+            { key: 'first-date', label: 'First Date' },
+            { key: 'our-trip', label: 'Our Trip' },
+            { key: 'silly-us', label: 'Silly Us' },
+            { key: 'small-moments', label: 'Small Moments' },
+            { key: 'secret-message', label: 'Secret Message', secret: true }
+        ];
+    }
+
+    loadedFolders = folders;
+    renderFolders(folders);
+}
+
+function renderFolders(folders) {
+    foldersGrid.innerHTML = '';
+    folders.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'folder-item';
+        if (f.secret) item.classList.add('secret-folder');
+        item.dataset.folder = f.key;
+
+        const icon = document.createElement('div');
+        icon.className = 'folder-icon';
+        // Attempt to load a custom icon from assets/icons/<folder>.(png|jpg|svg|jpeg|webp)
+        // If no custom icon exists, fall back to the emoji icon.
+        const iconImg = new Image();
+        iconImg.className = 'folder-image';
+        const exts = ['png', 'jpg', 'svg', 'jpeg', 'webp'];
+        let tryIndex = 0;
+
+        function tryLoadIcon() {
+            if (tryIndex >= exts.length) {
+                // No icon found, use default emoji
+                icon.textContent = f.secret ? '🔒' : '📁';
+                return;
+            }
+
+            const ext = exts[tryIndex++];
+            const src = `assets/icons/${f.key}.${ext}`;
+            iconImg.onload = function() {
+                icon.textContent = '';
+                icon.appendChild(iconImg);
+            };
+            iconImg.onerror = tryLoadIcon;
+            // Start loading
+            iconImg.src = src;
+        }
+
+        // Kick off icon loading
+        tryLoadIcon();
+
+        const label = document.createElement('p');
+        label.className = 'folder-label';
+        label.textContent = f.label || f.key;
+
+        item.appendChild(icon);
+        item.appendChild(label);
+
+        // Click handling
+        item.addEventListener('click', () => {
+            // Play mapped audio for this folder if present
+            if (f.audio) playAudio(f.audio);
+
+            if (f.secret || f.key === 'secret-message') {
+                openPuzzle();
+                return;
+            }
+
+            // If manifest provided explicit files, use them
+            if (f.files && Array.isArray(f.files) && f.files.length > 0) {
+                openPhotoGalleryFromFiles(f);
+                return;
+            }
+
+                // If we have an entry in memoriesData, use it. Try to resolve similar keys
+                const memKey = findMemoriesDataKey(f.key);
+                if (memKey) {
+                    openPhotoGallery(memKey);
+                    return;
+                }
+
+            // Otherwise, show the modal with a helpful message
+            openEmptyFolderModal(f);
+        });
+
+        // Staggered animation delay
+        item.style.animationDelay = (0.1 * (i + 1)) + 's';
+
+        foldersGrid.appendChild(item);
     });
+}
+
+    /**
+     * Try to find a matching key in memoriesData for a manifest key.
+     * Normalizes by removing non-alphanumerics and comparing lowercase.
+     */
+    function findMemoriesDataKey(manifestKey) {
+        if (!manifestKey) return null;
+        if (memoriesData[manifestKey]) return manifestKey;
+        const norm = manifestKey.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (const k of Object.keys(memoriesData)) {
+            const kn = k.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (kn === norm) return k;
+        }
+        return null;
+    }
+
+function openEmptyFolderModal(folder) {
+    const gallery = document.querySelector('.photos-gallery');
+    gallery.innerHTML = '';
+
+    const info = document.createElement('div');
+    info.className = 'photo-item';
+
+    const frame = document.createElement('div');
+    frame.className = 'photo-frame';
+    frame.style.display = 'flex';
+    frame.style.justifyContent = 'center';
+    frame.style.alignItems = 'center';
+    frame.style.height = '140px';
+
+    const msg = document.createElement('p');
+    msg.className = 'photo-caption';
+    msg.textContent = `No photos yet. Add images to assets/${folder.key}/ or update assets/folders.json`;
+
+    info.appendChild(frame);
+    info.appendChild(msg);
+    gallery.appendChild(info);
+
+    photoModal.classList.add('active');
+}
+
+// Show full-size overlay for an image
+function showPhotoOverlay(src, caption) {
+    overlayImage.src = src;
+    overlayImage.alt = caption || '';
+    overlayCaption.textContent = caption || '';
+    photoOverlay.classList.add('active');
+}
+
+function hidePhotoOverlay() {
+    photoOverlay.classList.remove('active');
+    overlayImage.src = '';
+    overlayCaption.textContent = '';
+}
+
+overlayClose.addEventListener('click', hidePhotoOverlay);
+photoOverlay.addEventListener('click', (e) => {
+    if (e.target === photoOverlay) hidePhotoOverlay();
 });
 
 /**
@@ -186,6 +364,17 @@ function openPhotoGallery(folderKey) {
         img.src = photo.src;
         img.alt = photo.caption;
 
+        // Make photos clickable to open full-size overlay
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => {
+            // Build full-size src: if src is already full path, use it; else use basePath
+            let fullSrc = photo.src;
+            if (!/^https?:\/\//.test(fullSrc) && !fullSrc.startsWith('data:')) {
+                if (folder.basePath) fullSrc = folder.basePath + fullSrc;
+            }
+            showPhotoOverlay(fullSrc, photo.caption);
+        });
+
         photoFrame.appendChild(img);
 
         const caption = document.createElement('p');
@@ -200,6 +389,68 @@ function openPhotoGallery(folderKey) {
 
     // Show modal
     photoModal.classList.add('active');
+
+    // If manifest maps audio to this folder, play it
+    const manifestEntry = loadedFolders.find(f => f.key === folderKey);
+    if (manifestEntry && manifestEntry.audio) {
+        playAudio(manifestEntry.audio);
+    }
+}
+
+/**
+ * Open photo gallery when manifest provides a folder object with files or a folder key
+ * @param {object} folderObj - folder object from manifest { key, label, files }
+ */
+function openPhotoGalleryFromFiles(folderObj) {
+    const gallery = document.querySelector('.photos-gallery');
+    gallery.innerHTML = '';
+
+    const basePath = folderObj.basePath || `assets/${folderObj.key}/`;
+
+    folderObj.files.forEach((file) => {
+        const photoItem = document.createElement('div');
+        photoItem.className = 'photo-item';
+
+        const photoFrame = document.createElement('div');
+        photoFrame.className = 'photo-frame';
+
+        const img = document.createElement('img');
+        // Support either string filenames or objects { src|file, caption }
+        let fileSrc = '';
+        let fileCaption = '';
+        if (typeof file === 'string') {
+            fileSrc = file;
+        } else if (typeof file === 'object' && file !== null) {
+            fileSrc = file.src || file.file || '';
+            fileCaption = file.caption || file.captionText || '';
+        }
+
+        // If the file entry looks like a full URL, use it directly; otherwise join with basePath
+        const src = /^(https?:)?\/\//.test(fileSrc) ? fileSrc : (basePath + fileSrc);
+        img.src = src;
+        img.alt = fileCaption || folderObj.label || folderObj.key;
+
+        // Click to open overlay
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => showPhotoOverlay(src, fileCaption));
+
+        photoFrame.appendChild(img);
+
+        const caption = document.createElement('p');
+        caption.className = 'photo-caption';
+        caption.textContent = fileCaption || '';
+
+        photoItem.appendChild(photoFrame);
+        photoItem.appendChild(caption);
+
+        gallery.appendChild(photoItem);
+    });
+
+    photoModal.classList.add('active');
+
+    if (folderObj && folderObj.audio) {
+        playAudio(folderObj.audio);
+    }
 }
 
 /**
@@ -207,11 +458,13 @@ function openPhotoGallery(folderKey) {
  */
 modalClose.addEventListener('click', function() {
     photoModal.classList.remove('active');
+    stopAudio();
 });
 
 photoModal.addEventListener('click', function(e) {
     if (e.target === photoModal) {
         photoModal.classList.remove('active');
+        stopAudio();
     }
 });
 
@@ -228,6 +481,7 @@ const puzzleBackBtn = document.getElementById('puzzleBackBtn');
  * Open the puzzle page
  */
 function openPuzzle() {
+    stopAudio();
     switchPage('puzzle');
     generatePuzzlePieces();
 }
@@ -274,21 +528,23 @@ function generatePuzzlePieces() {
         pieceElement.dataset.col = piece.col;
         pieceElement.dataset.index = index;
 
-        // Set background image with correct position
-        pieceElement.style.backgroundImage = `url('${puzzleImageUrl}')`;
-        pieceElement.style.backgroundSize = `${containerWidth * gridSize}px ${containerHeight * gridSize}px`;
-        pieceElement.style.backgroundPosition = `${-piece.col * pieceWidth}px ${-piece.row * pieceHeight}px`;
-
         // Set piece dimensions
         pieceElement.style.width = pieceWidth + 'px';
         pieceElement.style.height = pieceHeight + 'px';
 
-        // Random position around the board initially
+        // Set background image with correct position
+        // The background size is the full container size, and we offset to show the correct piece
+        pieceElement.style.backgroundImage = `url('${puzzleImageUrl}')`;
+        pieceElement.style.backgroundSize = `${containerWidth}px ${containerHeight}px`;
+        pieceElement.style.backgroundPosition = `${-piece.col * pieceWidth}px ${-piece.row * pieceHeight}px`;
+
+        // Random position around the board initially - scatter outside grid
         const randomX = Math.random() * (containerWidth - pieceWidth);
-        const randomY = Math.random() * (containerHeight - pieceHeight) - containerHeight * 0.5;
+        const randomY = Math.random() * (containerHeight - pieceHeight);
 
         pieceElement.style.left = randomX + 'px';
         pieceElement.style.top = randomY + 'px';
+        pieceElement.style.zIndex = '20'; // Floating pieces visible over snapped ones
 
         // Store piece data
         const pieceData = {
@@ -326,7 +582,7 @@ function addPieceEventListeners(element, pieceData, pieceWidth, pieceHeight) {
 
         isDragging = true;
         state.isDraggingPiece = true;
-        element.style.zIndex = '100';
+        element.style.zIndex = '100'; // Dragging piece goes on top
 
         // Get initial position
         const rect = element.getBoundingClientRect();
@@ -393,7 +649,7 @@ function addPieceEventListeners(element, pieceData, pieceWidth, pieceHeight) {
             // Snap to correct position
             snapPiece(element, pieceData);
         } else {
-            element.style.zIndex = Math.floor(Math.random() * 50); // Reset z-index
+            element.style.zIndex = '20'; // Floating piece stays on top of snapped pieces
         }
     }
 }
@@ -405,13 +661,55 @@ function snapPiece(element, pieceData) {
     element.style.left = pieceData.correctX + 'px';
     element.style.top = pieceData.correctY + 'px';
     element.classList.add('snapped');
+    element.style.zIndex = '10'; // Snapped pieces in the back
     pieceData.snapped = true;
     state.snappedPieces++;
+
+    // Try to snap adjacent pieces magnetically
+    snapAdjacentPieces(pieceData);
 
     // Check if puzzle is complete
     if (state.snappedPieces === state.puzzleGrid * state.puzzleGrid) {
         completePuzzle();
     }
+}
+
+/**
+ * Snap adjacent pieces magnetically when a piece is placed
+ */
+function snapAdjacentPieces(placedPiece) {
+    const gridSize = state.puzzleGrid;
+    const adjacentOffsets = [
+        { row: -1, col: 0 }, // top
+        { row: 1, col: 0 },  // bottom
+        { row: 0, col: -1 }, // left
+        { row: 0, col: 1 }   // right
+    ];
+
+    adjacentOffsets.forEach(offset => {
+        const adjacentRow = placedPiece.row + offset.row;
+        const adjacentCol = placedPiece.col + offset.col;
+
+        // Check if adjacent position is within grid
+        if (adjacentRow >= 0 && adjacentRow < gridSize && adjacentCol >= 0 && adjacentCol < gridSize) {
+            // Find the piece at this position
+            const adjacentPiece = state.puzzlePieces.find(
+                p => p.row === adjacentRow && p.col === adjacentCol && !p.snapped
+            );
+
+            if (adjacentPiece) {
+                // Check if it's close enough to snap
+                const distX = Math.abs(adjacentPiece.offsetX - adjacentPiece.correctX);
+                const distY = Math.abs(adjacentPiece.offsetY - adjacentPiece.correctY);
+                const pieceWidth = adjacentPiece.element.offsetWidth;
+
+                // Snap if within 40% of piece size
+                if (distX < pieceWidth * 0.4 && distY < pieceWidth * 0.4) {
+                    snapPiece(adjacentPiece.element, adjacentPiece);
+                }
+            }
+        }
+    });
 }
 
 /**
@@ -438,6 +736,7 @@ function completePuzzle() {
 document.addEventListener('DOMContentLoaded', function() {
     // Soft auto-open of card after a delay for better UX
     // Users can still interact with the card
+    loadAndRenderFolders();
 });
 
 // Prevent body scroll on mobile when modal is open

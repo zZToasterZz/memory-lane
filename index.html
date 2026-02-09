@@ -31,27 +31,8 @@
     <div id="memoriesPage" class="page">
         <div class="memories-container">
             <h1 class="memories-title">Our Memories</h1>
-            <div class="folders-grid">
-                <div class="folder-item" data-folder="first-date">
-                    <div class="folder-icon">📁</div>
-                    <p class="folder-label">First Date</p>
-                </div>
-                <div class="folder-item" data-folder="our-trip">
-                    <div class="folder-icon">📁</div>
-                    <p class="folder-label">Our Trip</p>
-                </div>
-                <div class="folder-item" data-folder="silly-us">
-                    <div class="folder-icon">📁</div>
-                    <p class="folder-label">Silly Us</p>
-                </div>
-                <div class="folder-item" data-folder="small-moments">
-                    <div class="folder-icon">📁</div>
-                    <p class="folder-label">Small Moments</p>
-                </div>
-                <div class="folder-item secret-folder" data-folder="secret-message">
-                    <div class="folder-icon">🔒</div>
-                    <p class="folder-label">Secret Message</p>
-                </div>
+            <div id="foldersGrid" class="folders-grid">
+                <!-- Folders will be rendered dynamically from assets/folders.json or fallback list -->
             </div>
         </div>
     </div>
@@ -89,6 +70,19 @@
             <p class="final-message-signature">Always.</p>
         </div>
     </div>
+
+    <!-- Full-size photo overlay -->
+    <div id="photoOverlay" class="photo-overlay">
+        <div class="photo-overlay-content">
+            <button id="overlayClose" class="overlay-close">&times;</button>
+            <div class="overlay-frame">
+                <img id="overlayImage" src="" alt="" />
+            </div>
+            <p id="overlayCaption" class="photo-caption"></p>
+        </div>
+    </div>
+
+        <!-- folders manifest is read from assets/folders.json (external only) -->
 
     <script src="script.js"></script>
 </body>
