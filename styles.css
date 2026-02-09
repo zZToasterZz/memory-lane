@@ -1,0 +1,643 @@
+/* ============================================
+   GENERAL STYLES
+   ============================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Garamond', serif;
+    background: linear-gradient(135deg, #faf4ed 0%, #f5e6dc 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6b5b52;
+    overflow: hidden;
+}
+
+/* ============================================
+   PAGE SYSTEM
+   ============================================ */
+.page {
+    width: 100%;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    overflow: hidden;
+}
+
+.page.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* ============================================
+   GREETING CARD PAGE
+   ============================================ */
+.greeting-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+}
+
+.card {
+    width: 300px;
+    height: 400px;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+}
+
+.card.opened {
+    transform: rotateY(-160deg);
+}
+
+.card-front,
+.card-inside {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #fff5f0 0%, #fce9e1 100%);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.8;
+    backface-visibility: hidden;
+}
+
+.card-inside {
+    transform: rotateY(180deg);
+}
+
+.card-front {
+    border: 2px solid rgba(184, 134, 120, 0.2);
+}
+
+.card-text {
+    font-size: 48px;
+    font-weight: 300;
+    color: #c8847a;
+    letter-spacing: 2px;
+}
+
+.inside-text {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #6b5b52;
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.button {
+    background: linear-gradient(135deg, #c8847a 0%, #b87560 100%);
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(200, 132, 122, 0.3);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(200, 132, 122, 0.4);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   MEMORIES PAGE
+   ============================================ */
+.memories-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+.memories-title {
+    font-size: 42px;
+    margin-bottom: 60px;
+    color: #8b6f67;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-align: center;
+}
+
+.folders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 40px;
+    max-width: 900px;
+    width: 100%;
+}
+
+.folder-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+}
+
+.folder-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.folder-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.folder-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.folder-item:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.folder-item:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.folder-item:hover {
+    transform: scale(1.1);
+}
+
+.folder-icon {
+    font-size: 80px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.folder-item:hover .folder-icon {
+    transform: scale(1.15);
+}
+
+.folder-label {
+    font-size: 16px;
+    color: #8b6f67;
+    text-align: center;
+    font-weight: 400;
+}
+
+.secret-folder:hover {
+    animation: jiggle 0.3s ease;
+}
+
+@keyframes jiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+}
+
+/* ============================================
+   PHOTO GALLERY MODAL
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #fff5f0 0%, #fce9e1 100%);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.4s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #c8847a;
+    transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+    transform: rotate(90deg);
+}
+
+.photos-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.photo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeInSlide 0.5s ease forwards;
+}
+
+.photo-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.photo-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.photo-item:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.photo-frame {
+    width: 280px;
+    height: 220px;
+    background: linear-gradient(135deg, #f9f1ed 0%, #f5e6dc 100%);
+    border: 12px solid #fff5f0;
+    border-radius: 4px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-caption {
+    font-size: 14px;
+    color: #8b6f67;
+    margin-top: 12px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* ============================================
+   PUZZLE PAGE
+   ============================================ */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(200, 132, 122, 0.9);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', serif;
+    z-index: 50;
+    box-shadow: 0 2px 10px rgba(200, 132, 122, 0.3);
+}
+
+.back-button:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 4px 15px rgba(200, 132, 122, 0.4);
+}
+
+.back-button:active {
+    transform: translateX(0);
+}
+
+.puzzle-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.puzzle-title {
+    font-size: 36px;
+    margin-bottom: 40px;
+    color: #8b6f67;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.puzzle-board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+}
+
+.puzzle-pieces-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    border: 2px dashed rgba(184, 134, 120, 0.3);
+    overflow: hidden;
+}
+
+.puzzle-piece {
+    position: absolute;
+    cursor: grab;
+    touch-action: none;
+    animation: pieceSpawn 0.5s ease;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.puzzle-piece:active {
+    cursor: grabbing;
+    z-index: 50;
+}
+
+@keyframes pieceSpawn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.puzzle-piece.snapped {
+    cursor: default;
+    opacity: 0.9;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   FINAL MESSAGE OVERLAY
+   ============================================ */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #faf4ed 0%, #f5e6dc 100%);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.final-message-content {
+    text-align: center;
+    animation: messageAppear 0.8s ease;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.final-message {
+    font-size: 32px;
+    color: #c8847a;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.final-message-signature {
+    font-size: 24px;
+    color: #8b6f67;
+    font-style: italic;
+    margin-top: 60px;
+    animation: signatureAppear 0.8s ease 0.4s forwards;
+    opacity: 0;
+}
+
+@keyframes signatureAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+    .card {
+        width: 250px;
+        height: 350px;
+    }
+
+    .card-text {
+        font-size: 36px;
+    }
+
+    .inside-text {
+        font-size: 15px;
+    }
+
+    .memories-title {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
+
+    .folders-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 30px;
+    }
+
+    .folder-icon {
+        font-size: 60px;
+    }
+
+    .modal-content {
+        padding: 30px;
+    }
+
+    .photo-frame {
+        width: 240px;
+        height: 180px;
+    }
+
+    .final-message {
+        font-size: 24px;
+    }
+
+    .final-message-signature {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 220px;
+        height: 310px;
+    }
+
+    .card-text {
+        font-size: 28px;
+    }
+
+    .inside-text {
+        font-size: 14px;
+    }
+
+    .button {
+        padding: 10px 30px;
+        font-size: 14px;
+    }
+
+    .memories-title {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+
+    .folders-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 20px;
+    }
+
+    .folder-icon {
+        font-size: 50px;
+    }
+
+    .folder-label {
+        font-size: 13px;
+    }
+
+    .puzzle-title {
+        font-size: 24px;
+    }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(184, 134, 120, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(184, 134, 120, 0.4);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(184, 134, 120, 0.6);
+}

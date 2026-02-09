@@ -1,3 +1,3 @@
 # memory-lane
-Something special for someone special
+Something special for someone special.
 Initial commit test.
