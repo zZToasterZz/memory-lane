@@ -1,73 +1,110 @@
 [
   {
     "key": "firstdate",
-    "label": "First Date",
+    "label": " ",
     "basePath": "assets/photos/firstdate/",
     "files": [
         { "file": "1.jpeg", "caption": "The day we met." }, 
         { "file": "2.jpeg", "caption": "And I knew we were meant to be." }
-    ],
-    "audio": "assets/ost/GehraHua.mp3"
+    ]
   },
   {
     "key": "seconddate",
-    "label": "Second Date",
+    "label": " ",
     "basePath": "assets/photos/seconddate/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "That look ❤️" }, 
+        { "file": "2.jpeg", "caption": "We started building something special." }
+    ]
   },
   {
     "key": "familymeet",
-    "label": "Family Meet",
+    "label": " ",
     "basePath": "assets/photos/familymeet/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "We declared our love to the world" }
+    ]
   },
   {
     "key": "firstkiss",
-    "label": "First Kiss",
+    "label": " ",
     "basePath": "assets/photos/firstkiss/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "The day we'll never forget" }
+    ]
   },
   {
     "key": "babybirthday",
-    "label": "Baby Birthday",
+    "label": " ",
     "basePath": "assets/photos/babybirthday/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "Words can't do justice to what I felt this day ❤️" }
+    ]
   },
   {
     "key": "ring",
-    "label": "Ring",
+    "label": " ",
     "basePath": "assets/photos/ring/",
-    "files": []
+    "files": [
+      { "file": "1.jpeg", "caption": "We made it official ❤️" }
+    ]
   },
   {
     "key": "newyear",
-    "label": "New Year",
+    "label": " ",
     "basePath": "assets/photos/newyear/",
     "files": []
   },
   {
     "key": "mybirthday",
-    "label": "My Birthday",
+    "label": " ",
     "basePath": "assets/photos/mybirthday/",
-    "files": []
+    "files": [
+        { "file": "5.jpeg", "caption": "You made me the happiest person on earth ❤️" },
+        { "file": "4.jpeg", "caption": "" },
+        { "file": "6.jpeg", "caption": "The best cake to ever grace my lips ❤️" },
+        { "file": "1.jpeg", "caption": "" }, 
+        { "file": "2.jpeg", "caption": "" },
+        { "file": "3.jpeg", "caption": "" },
+        { "file": "7.jpeg", "caption": "" }
+    ]
   },
   {
     "key": "firsttrip",
-    "label": "First Trip",
+    "label": " ",
     "basePath": "assets/photos/firsttrip/",
-    "files": []
+    "files": [
+        { "file": "5.jpeg", "caption": "" },
+        { "file": "4.jpeg", "caption": "" },
+        { "file": "6.jpeg", "caption": "" },
+        { "file": "1.jpeg", "caption": "" }, 
+        { "file": "2.jpeg", "caption": "Boss lady" },
+        { "file": "3.jpeg", "caption": "" },
+        { "file": "7.jpeg", "caption": "" },
+        { "file": "8.jpeg", "caption": "" },
+        { "file": "9.jpeg", "caption": "" }
+    ]
   },
   {
     "key": "specialmoments",
-    "label": "Special Moments",
+    "label": " ",
     "basePath": "assets/photos/specialmoments/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "❤️" }, 
+        { "file": "2.jpeg", "caption": "The effort you put in for me showed me how much you care ❤️" }
+    ]
   },
   {
     "key": "sillyus",
-    "label": "Silly Us",
+    "label": " ",
     "basePath": "assets/photos/sillyus/",
-    "files": []
+    "files": [
+        { "file": "1.jpeg", "caption": "Kya aapke toothpaste me namak hai ?" }, 
+        { "file": "2.jpeg", "caption": "" },
+        { "file": "3.jpeg", "caption": "" },
+        { "file": "4.jpeg", "caption": "" },
+        { "file": "5.jpeg", "caption": "" }
+    ]
   },
   {
     "key": "secret-message",

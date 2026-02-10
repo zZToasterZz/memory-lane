@@ -110,6 +110,13 @@ function switchPage(pageName) {
     if (pageElement) {
         pageElement.classList.add('active');
         state.currentPage = pageName;
+        
+        // Manage background music based on page
+        if (pageName === 'memories') {
+            playBackgroundAudio();
+        } else {
+            pauseBackgroundAudio();
+        }
     }
 }
 
@@ -152,8 +159,12 @@ const overlayImage = document.getElementById('overlayImage');
 const overlayCaption = document.getElementById('overlayCaption');
 const overlayClose = document.getElementById('overlayClose');
 
+// Background music tracking
+let backgroundAudio = null;
+const backgroundMusicSrc = 'assets/ost/GehraHua.mp3';
+
 function playAudio(src) {
-    stopAudio();
+    pauseBackgroundAudio();
     if (!src) return;
     try {
         currentAudio = new Audio(src);
@@ -169,6 +180,34 @@ function stopAudio() {
     if (currentAudio) {
         try { currentAudio.pause(); } catch(e) {}
         currentAudio = null;
+    }
+}
+
+function playBackgroundAudio() {
+    if (!backgroundAudio) {
+        try {
+            backgroundAudio = new Audio(backgroundMusicSrc);
+            backgroundAudio.loop = true;
+            backgroundAudio.volume = 0.3;
+            backgroundAudio.play().catch(()=>{});
+        } catch (e) {
+            backgroundAudio = null;
+        }
+    } else if (backgroundAudio.paused) {
+        backgroundAudio.play().catch(()=>{});
+    }
+}
+
+function pauseBackgroundAudio() {
+    if (backgroundAudio && !backgroundAudio.paused) {
+        try { backgroundAudio.pause(); } catch(e) {}
+    }
+}
+
+function stopBackgroundAudio() {
+    if (backgroundAudio) {
+        try { backgroundAudio.pause(); } catch(e) {}
+        backgroundAudio = null;
     }
 }
 
@@ -459,12 +498,14 @@ function openPhotoGalleryFromFiles(folderObj) {
 modalClose.addEventListener('click', function() {
     photoModal.classList.remove('active');
     stopAudio();
+    playBackgroundAudio();
 });
 
 photoModal.addEventListener('click', function(e) {
     if (e.target === photoModal) {
         photoModal.classList.remove('active');
         stopAudio();
+        playBackgroundAudio();
     }
 });
 

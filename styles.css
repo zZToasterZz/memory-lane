@@ -719,3 +719,29 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(184, 134, 120, 0.6);
 }
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: #8b6f67;
+    background: rgba(250, 244, 237, 0.95);
+    border-top: 1px solid rgba(200, 132, 122, 0.2);
+    z-index: 1000;
+}
+
+.footer a {
+    color: #c8847a;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
